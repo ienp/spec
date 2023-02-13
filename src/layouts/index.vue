@@ -1,13 +1,16 @@
 <template>
-
+  <div class="spec-layout">
+    <SpecAside />
+    <main>
+      <RouterView />
+    </main>
+  </div>
 </template>
 
-<script>
-  export default {
-    name: 'index'
-  }
+<script setup lang="ts">
+  import SpecAside from './aside/index.vue'
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+  @import '../styles/layout.scss';
 </style>
