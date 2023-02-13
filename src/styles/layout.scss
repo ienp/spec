@@ -1,0 +1,13 @@
+.spec-layout {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  overflow: hidden;
+
+  &-aside {
+    width: 45px;
+    height: 100%;
+    background: #ffffff;
+    border-right: 1px solid #eeeeee;
+  }
+}
