@@ -1,3 +1,5 @@
+import * as path from 'path'
+
 function domReady(condition: DocumentReadyState[] = ['complete', 'interactive']) {
   return new Promise((resolve) => {
     if (condition.includes(document.readyState)) {
@@ -11,6 +13,13 @@ function domReady(condition: DocumentReadyState[] = ['complete', 'interactive'])
     }
   })
 }
+const { contextBridge, ipcRenderer } = require('electron')
+
+contextBridge.exposeInMainWorld('electron', {
+  startDrag: (fileName) => {
+    ipcRenderer.send('ondragstart', path.join(process.cwd(), fileName))
+  }
+})
 
 const safeDOM = {
   append(parent: HTMLElement, child: HTMLElement) {

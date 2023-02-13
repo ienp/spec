@@ -4,7 +4,7 @@ import { join } from 'node:path'
 
 process.env.DIST_ELECTRON = join(__dirname, '..')
 process.env.DIST = join(process.env.DIST_ELECTRON, '../dist')
-process.env.PUBLIC = "http://127.0.0.1:4043/"
+process.env.PUBLIC = 'http://127.0.0.1:4043/'
   ? join(process.env.DIST_ELECTRON, '../public')
   : process.env.DIST
 
@@ -19,22 +19,21 @@ if (!app.requestSingleInstanceLock()) {
   process.exit(0)
 }
 
-
 // 删除警告
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
 let win: BrowserWindow | null = null
 const preload = join(__dirname, '../preload/index.js')
-const url = "http://127.0.0.1:4043/"
+const url = 'http://127.0.0.1:4043/'
 const indexHtml = join(process.env.DIST, 'index.html')
 
 async function createWindow() {
-  console.log(join(process.env.PUBLIC, '/vite.svg'))
+  console.log(join(process.env.PUBLIC, '/logo.svg'))
   win = new BrowserWindow({
     width: 1440,
     height: 1000,
     title: 'Spec - 新一代Markdown 编辑器',
-    icon: join(process.env.PUBLIC, '/vite.svg'),
+    icon: 'public/logo.svg',
     frame: false,
     titleBarStyle: 'hidden',
     webPreferences: {
@@ -72,7 +71,6 @@ app.on('window-all-closed', () => {
 
 app.on('second-instance', () => {
   if (win) {
-    // Focus on the main window if the user tried to open another
     if (win.isMinimized()) win.restore()
     win.focus()
   }
@@ -87,19 +85,35 @@ app.on('activate', () => {
   }
 })
 
-// // New window example arg: new windows url
-// ipcMain.handle('open-win', (_, arg) => {
-//   const childWindow = new BrowserWindow({
-//     webPreferences: {
-//       preload,
-//       nodeIntegration: true,
-//       contextIsolation: false
-//     }
-//   })
-//
-//   if (process.env.VITE_SERVER_URL) {
-//     childWindow.loadURL(`${url}#${arg}`)
-//   } else {
-//     childWindow.loadFile(indexHtml, { hash: arg })
-//   }
-// })
+/*
+ * 创建新窗口
+ * @param arg: string 展示路由路径
+ * @param width: number 窗口宽度
+ * @param height: number 窗口高度
+ * */
+function createNewWindow(arg: string, width: number = 500, height: number = 600) {
+  const childWindow = new BrowserWindow({
+    width,
+    height,
+    frame: false,
+    titleBarStyle: 'hidden',
+    webPreferences: {
+      preload,
+      nodeIntegration: true,
+      contextIsolation: false
+    }
+  })
+
+  if (process.env.PUBLIC) {
+    console.log(`${url}#/${arg}`)
+    childWindow.loadURL(`${url}#${arg}`)
+    childWindow.webContents.openDevTools()
+  } else {
+    childWindow.loadFile(indexHtml, { hash: '' })
+  }
+}
+
+ipcMain.on('open-win', (_, arg, width, height) => {
+  console.log(arg)
+  createNewWindow(arg, width, height)
+})
